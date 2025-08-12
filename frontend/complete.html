@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Builder - Complete Assignment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .draggable {
+            cursor: move;
+            transition: transform 0.2s ease;
+        }
+        .draggable:hover {
+            transform: scale(1.05);
+        }
+        .drag-over {
+            background-color: rgba(99, 102, 241, 0.2) !important;
+            border: 2px dashed #6366f1 !important;
+        }
+        .drop-zone {
+            min-height: 100px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        .blank-space {
+            display: inline-block;
+            min-width: 100px;
+            height: 30px;
+            border-bottom: 2px solid #6366f1;
+            margin: 0 5px;
+            vertical-align: bottom;
+            position: relative;
+        }
+        .blank-filled {
+            background-color: #dbeafe;
+            border-radius: 4px;
+            padding: 4px 8px;
+            border-bottom: none;
+        }
+        .option-word {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: move;
+            margin: 5px;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+        .option-word:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        .category-box {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            min-height: 120px;
+            transition: all 0.3s ease;
+        }
+        .category-box.drag-over {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+        .category-item {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin: 5px;
+            display: inline-block;
+            cursor: move;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+        .notification.success { background: #10b981; }
+        .notification.error { background: #ef4444; }
+        .notification.info { background: #3b82f6; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass backdrop-blur-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-white">🚀 Form Builder</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showPage('home')" class="text-white hover:text-purple-200 transition-colors">Home</button>
+                    <button onclick="showPage('builder')" class="bg-white text-primary px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors">Create Form</button>
+                    <button onclick="showPage('forms')" class="text-white hover:text-purple-200 transition-colors">View Forms</button>
+                    <button onclick="testAPI()" class="text-white hover:text-purple-200 transition-colors">Test API</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home-page" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="glass rounded-3xl p-8 mb-8">
+                <h2 class="text-5xl font-bold text-white mb-6">Custom Form Builder</h2>
+                <p class="text-xl text-gray-200 mb-8">Create interactive forms with advanced question types</p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Categorize Questions</h3>
+                        <p class="text-gray-600">Drag and drop items into correct categories with intuitive interface</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                        <div class="text-4xl mb-4">📝</div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Cloze Questions</h3>
+                        <p class="text-gray-600">Fill-in-the-blank questions with drag and drop word options</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                        <div class="text-4xl mb-4">📖</div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Comprehension Questions</h3>
+                        <p class="text-gray-600">Multiple choice questions with rich text and image support</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button onclick="showPage('builder')" class="bg-white text-primary px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors text-lg">
+                        🎯 Create New Form
+                    </button>
+                    <button onclick="showPage('forms')" class="glass border border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition-colors text-lg">
+                        📋 View All Forms
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Builder Page -->
+    <div id="builder-page" class="hidden min-h-screen p-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="glass rounded-xl p-6 mb-6">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white mb-2">Form Builder</h2>
+                        <p class="text-gray-200">Create your custom form with advanced question types</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="previewForm()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            👁️ Preview
+                        </button>
+                        <button onclick="showPage('home')" class="text-white hover:text-purple-200 transition-colors">← Back</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Form Configuration Panel -->
+                <div class="lg:col-span-1">
+                    <div class="glass rounded-xl p-6 mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">Form Settings</h3>
+                        
+                        <div class="mb-4">
+                            <label class="block text-white font-medium mb-2">Form Title *</label>
+                            <input type="text" id="formTitle" placeholder="Enter form title..." 
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-white font-medium mb-2">Description</label>
+                            <textarea id="formDescription" placeholder="Enter form description..." rows="3"
+                                      class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-white font-medium mb-2">Header Image</label>
+                            <input type="file" id="headerImageInput" accept="image/*" onchange="handleHeaderImage()" 
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary bg-white">
+                            <div id="headerImagePreview" class="hidden mt-2">
+                                <img id="headerImageDisplay" class="w-full h-32 object-cover rounded-lg">
+                                <button onclick="removeHeaderImage()" class="mt-2 text-red-400 hover:text-red-300 text-sm">Remove Image</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass rounded-xl p-6">
+                        <h3 class="text-xl font-bold text-white mb-4">Add Questions</h3>
+                        <div class="space-y-3">
+                            <button onclick="addQuestion('categorize')" 
+                                    class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
+                                <span class="mr-2">📊</span> Add Categorize Question
+                            </button>
+                            <button onclick="addQuestion('cloze')" 
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
+                                <span class="mr-2">📝</span> Add Cloze Question
+                            </button>
+                            <button onclick="addQuestion('comprehension')" 
+                                    class="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
+                                <span class="mr-2">📖</span> Add Comprehension Question
+                            </button>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t border-gray-300">
+                            <button onclick="saveForm()" 
+                                    class="w-full bg-white text-primary px-4 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                                💾 Save Form
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Questions List -->
+                <div class="lg:col-span-2">
+                    <div class="glass rounded-xl p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-white">Form Questions</h3>
+                            <span id="questionCount" class="text-gray-200">0 questions</span>
+                        </div>
+                        
+                        <div id="empty-state" class="text-center py-12">
+                            <div class="text-gray-400 text-6xl mb-4">📝</div>
+                            <h4 class="text-xl font-medium text-gray-300 mb-2">No questions yet</h4>
+                            <p class="text-gray-400">Add your first question using the buttons on the left</p>
+                        </div>
+                        
+                        <div id="questions-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Preview/Fill Page -->
+    <div id="preview-page" class="hidden min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="glass rounded-xl p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-white">Form Preview & Fill</h2>
+                    <div class="flex space-x-3">
+                        <button onclick="submitFormResponse()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            ✅ Submit Response
+                        </button>
+                        <button onclick="showPage('builder')" class="text-white hover:text-purple-200 transition-colors">← Back to Editor</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="form-preview-content" class="bg-white rounded-xl p-8 shadow-lg">
+                <!-- Preview content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Forms List Page -->
+    <div id="forms-list-page" class="hidden min-h-screen p-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="glass rounded-xl p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-white">All Forms</h2>
+                    <button onclick="showPage('home')" class="text-white hover:text-purple-200 transition-colors">← Back to Home</button>
+                </div>
+            </div>
+            
+            <div id="forms-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Forms will be populated here -->
+            </div>
+            
+            <div id="forms-empty" class="hidden text-center py-12">
+                <div class="glass rounded-xl p-8">
+                    <div class="text-gray-400 text-6xl mb-4">📋</div>
+                    <h4 class="text-xl font-medium text-white mb-2">No forms created yet</h4>
+                    <p class="text-gray-300 mb-6">Create your first form to get started</p>
+                    <button onclick="showPage('builder')" class="bg-white text-primary px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                        Create Form
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form View/Fill Page -->
+    <div id="form-view-page" class="hidden min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="glass rounded-xl p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-white" id="view-form-title">Form Title</h2>
+                    <div class="flex space-x-3">
+                        <button onclick="submitFilledForm()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            ✅ Submit Response
+                        </button>
+                        <button onclick="showPage('forms')" class="text-white hover:text-purple-200 transition-colors">← Back to Forms</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="form-view-content" class="bg-white rounded-xl p-8 shadow-lg">
+                <!-- Form content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let questions = [];
+        let questionCounter = 0;
+        let currentFormId = null;
+        let headerImageUrl = null;
+        let allForms = [];
+        let currentViewForm = null;
+
+        // Notification system
+        function showNotification(message, type = 'info', duration = 4000) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // Page navigation
+        function showPage(page) {
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('builder-page').classList.add('hidden');
+            document.getElementById('preview-page').classList.add('hidden');
+            document.getElementById('forms-list-page').classList.add('hidden');
+            document.getElementById('form-view-page').classList.add('hidden');
+            
+            switch(page) {
+                case 'home':
+                    document.getElementById('home-page').classList.remove('hidden');
+                    break;
+                case 'builder':
+                    document.getElementById('builder-page').classList.remove('hidden');
+                    break;
+                case 'preview':
+                    document.getElementById('preview-page').classList.remove('hidden');
+                    break;
+                case 'forms':
+                    document.getElementById('forms-list-page').classList.remove('hidden');
+                    loadAllForms();
+                    break;
+                case 'form-view':
+                    document.getElementById('form-view-page').classList.remove('hidden');
+                    break;
+            }
+        }
+
+        // Header image handling
+        function handleHeaderImage() {
+            const input = document.getElementById('headerImageInput');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    headerImageUrl = e.target.result;
+                    document.getElementById('headerImageDisplay').src = headerImageUrl;
+                    document.getElementById('headerImagePreview').classList.remove('hidden');
+                    showNotification('Header image uploaded successfully!', 'success');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeHeaderImage() {
+            headerImageUrl = null;
+            document.getElementById('headerImagePreview').classList.add('hidden');
+            document.getElementById('headerImageInput').value = '';
+            showNotification('Header image removed', 'info');
+        }
+
+        // Question management
+        function addQuestion(type) {
+            questionCounter++;
+            const question = {
+                id: questionCounter,
+                type: type,
+                title: `${type.charAt(0).toUpperCase() + type.slice(1)} Question ${questionCounter}`,
+                details: getQuestionDetails(type),
+                image: null
+            };
+            
+            questions.push(question);
+            updateQuestionsList();
+            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} question added!`, 'success');
+        }
+
+        function getQuestionDetails(type) {
+            switch(type) {
+                case 'categorize':
+                    return {
+                        description: 'Drag and drop items into correct categories',
+                        categories: ['Animals', 'Fruits'],
+                        items: ['Cat', 'Apple', 'Dog', 'Banana']
+                    };
+                case 'cloze':
+                    return {
+                        description: 'Fill in the blanks with correct words',
+                        text: 'The quick _____ fox jumps over the lazy _____.',
+                        options: ['brown', 'dog', 'fast', 'cat']
+                    };
+                case 'comprehension':
+                    return {
+                        description: 'Read the passage and answer the questions',
+                        passage: 'The sun is a star at the center of our solar system. It provides light and heat to all the planets.',
+                        question: 'What does the sun provide to the planets?',
+                        options: ['Light and heat', 'Food and water', 'Air and soil', 'Sound and music'],
+                        correctAnswer: 0
+                    };
+                default:
+                    return {};
+            }
+        }
+
+        function updateQuestionsList() {
+            const questionsList = document.getElementById('questions-list');
+            const emptyState = document.getElementById('empty-state');
+            const questionCount = document.getElementById('questionCount');
+            
+            questionCount.textContent = `${questions.length} question${questions.length !== 1 ? 's' : ''}`;
+            
+            if (questions.length === 0) {
+                emptyState.style.display = 'block';
+                questionsList.innerHTML = '';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            const questionsHTML = questions.map((q, index) => {
+                return `
+                    <div class="bg-white rounded-lg p-6 shadow-lg">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">${getQuestionIcon(q.type)}</span>
+                                <div>
+                                    <h4 class="text-lg font-bold text-gray-800">${q.title}</h4>
+                                    <span class="inline-block bg-${getQuestionColor(q.type)}-100 text-${getQuestionColor(q.type)}-800 px-2 py-1 rounded-full text-sm font-medium">
+                                        ${q.type}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="addQuestionImage(${q.id})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                    🖼️ Image
+                                </button>
+                                <button onclick="removeQuestion(${q.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                    🗑️ Remove
+                                </button>
+                            </div>
+                        </div>
+                        ${q.image ? `<img src="${q.image}" class="w-full h-32 object-cover rounded-lg mb-4">` : ''}
+                        <div class="text-gray-600">${getQuestionPreview(q)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            questionsList.innerHTML = questionsHTML;
+        }
+
+        function getQuestionIcon(type) {
+            const icons = { categorize: '📊', cloze: '📝', comprehension: '📖' };
+            return icons[type] || '❓';
+        }
+
+        function getQuestionColor(type) {
+            const colors = { categorize: 'blue', cloze: 'green', comprehension: 'purple' };
+            return colors[type] || 'gray';
+        }
+
+        function getQuestionPreview(question) {
+            switch(question.type) {
+                case 'categorize':
+                    return `<strong>Categories:</strong> ${question.details.categories.join(', ')}<br><strong>Items:</strong> ${question.details.items.join(', ')}`;
+                case 'cloze':
+                    return `<strong>Text:</strong> "${question.details.text}"<br><strong>Options:</strong> ${question.details.options.join(', ')}`;
+                case 'comprehension':
+                    return `<strong>Passage:</strong> ${question.details.passage.substring(0, 100)}...<br><strong>Question:</strong> ${question.details.question}`;
+                default:
+                    return question.details.description || 'No preview available';
+            }
+        }
+
+        function addQuestionImage(id) {
+            const question = questions.find(q => q.id === id);
+            if (question) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            question.image = e.target.result;
+                            updateQuestionsList();
+                            showNotification('Image added to question!', 'success');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+                input.click();
+            }
+        }
+
+        function removeQuestion(id) {
+            questions = questions.filter(q => q.id !== id);
+            updateQuestionsList();
+            showNotification('Question removed successfully!', 'success');
+        }
+
+        // Form operations
+        function saveForm() {
+            const formTitle = document.getElementById('formTitle').value;
+            const formDescription = document.getElementById('formDescription').value;
+            
+            if (!formTitle.trim()) {
+                showNotification('Please enter a form title!', 'error');
+                return;
+            }
+            
+            if (questions.length === 0) {
+                showNotification('Please add at least one question!', 'error');
+                return;
+            }
+            
+            const formData = {
+                title: formTitle.trim(),
+                description: formDescription.trim(),
+                headerImage: headerImageUrl,
+                questions: questions.map(q => ({
+                    type: q.type,
+                    title: q.title,
+                    image: q.image,
+                    ...q.details
+                })),
+                createdAt: new Date().toISOString()
+            };
+            
+            showNotification('Saving form...', 'info');
+            
+            fetch('http://localhost:5000/api/forms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                currentFormId = data._id;
+                showNotification('Form saved successfully!', 'success');
+                
+                // Reset form
+                document.getElementById('formTitle').value = '';
+                document.getElementById('formDescription').value = '';
+                removeHeaderImage();
+                questions = [];
+                questionCounter = 0;
+                updateQuestionsList();
+                
+                setTimeout(() => showPage('home'), 1500);
+            })
+            .catch(error => {
+                console.error('Error saving form:', error);
+                showNotification('Error saving form: ' + error.message, 'error');
+            });
+        }
+
+        function previewForm() {
+            const formTitle = document.getElementById('formTitle').value;
+            const formDescription = document.getElementById('formDescription').value;
+            
+            if (!formTitle.trim()) {
+                showNotification('Please enter a form title to preview!', 'error');
+                return;
+            }
+            
+            if (questions.length === 0) {
+                showNotification('Please add at least one question to preview!', 'error');
+                return;
+            }
+            
+            generateFormPreview(formTitle, formDescription);
+            showPage('preview');
+        }
+
+        function generateFormPreview(title, description) {
+            const previewContent = document.getElementById('form-preview-content');
+            
+            let html = `
+                <div class="mb-8">
+                    ${headerImageUrl ? `<img src="${headerImageUrl}" class="w-full h-48 object-cover rounded-lg mb-6">` : ''}
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">${title}</h1>
+                    ${description ? `<p class="text-gray-600 text-lg mb-6">${description}</p>` : ''}
+                </div>
+            `;
+            
+            questions.forEach((question, index) => {
+                html += generateInteractiveQuestion(question, index + 1);
+            });
+            
+            previewContent.innerHTML = html;
+            
+            // Initialize drag and drop for preview
+            setTimeout(initializeDragAndDrop, 100);
+        }
+
+        function generateInteractiveQuestion(question, number) {
+            let html = `
+                <div class="border border-gray-200 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        ${number}. ${question.title}
+                    </h3>
+                    ${question.image ? `<img src="${question.image}" class="w-full max-w-md h-32 object-cover rounded-lg mb-4">` : ''}
+                    <p class="text-gray-600 mb-4">${question.details.description}</p>
+            `;
+            
+            switch(question.type) {
+                case 'categorize':
+                    html += generateCategorizeInteractive(question);
+                    break;
+                case 'cloze':
+                    html += generateClozeInteractive(question);
+                    break;
+                case 'comprehension':
+                    html += generateComprehensionInteractive(question);
+                    break;
+            }
+            
+            html += `</div>`;
+            return html;
+        }
+
+        function generateCategorizeInteractive(question) {
+            const categoriesHTML = question.details.categories.map(cat => `
+                <div class="category-box" data-category="${cat}">
+                    <h4 class="font-bold text-gray-700 mb-3">${cat}</h4>
+                    <div class="category-items" data-category="${cat}"></div>
+                </div>
+            `).join('');
+
+            const itemsHTML = question.details.items.map(item => `
+                <div class="category-item draggable" draggable="true" data-item="${item}">
+                    ${item}
+                </div>
+            `).join('');
+
+            return `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-3">Items to categorize:</h4>
+                        <div class="items-pool border-2 dashed border-gray-300 rounded-lg p-4 min-h-[100px]">
+                            ${itemsHTML}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-3">Categories:</h4>
+                        ${categoriesHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateClozeInteractive(question) {
+            let text = question.details.text;
+            let blankCount = 0;
+            
+            // Replace blanks with droppable spans
+            text = text.replace(/_+/g, () => {
+                blankCount++;
+                return `<span class="blank-space" data-blank="${blankCount}"></span>`;
+            });
+
+            const optionsHTML = question.details.options.map(option => `
+                <span class="option-word draggable" draggable="true" data-word="${option}">
+                    ${option}
+                </span>
+            `).join('');
+
+            return `
+                <div class="mb-4">
+                    <div class="bg-gray-50 p-6 rounded-lg mb-4 text-lg leading-relaxed">
+                        ${text}
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-700 mb-3">Available words:</h4>
+                        <div class="options-pool border-2 dashed border-gray-300 rounded-lg p-4">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateComprehensionInteractive(question) {
+            const optionsHTML = question.details.options.map((option, index) => `
+                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <input type="radio" name="comprehension_${question.id}" value="${index}" class="text-primary">
+                    <span class="flex-1">${option}</span>
+                </label>
+            `).join('');
+
+            return `
+                <div class="mb-4">
+                    <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                        <p class="text-gray-700 leading-relaxed">${question.details.passage}</p>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-bold text-gray-800 mb-4">${question.details.question}</h4>
+                        <div class="space-y-3">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initializeDragAndDrop() {
+            // Initialize drag and drop for categorize questions
+            const draggableItems = document.querySelectorAll('.draggable');
+            const dropZones = document.querySelectorAll('.category-box, .blank-space, .items-pool, .options-pool');
+
+            draggableItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.outerHTML);
+            e.dataTransfer.setData('text/id', e.target.getAttribute('data-item') || e.target.getAttribute('data-word'));
+            e.target.style.opacity = '0.5';
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = '1';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            const draggedHTML = e.dataTransfer.getData('text/plain');
+            const draggedId = e.dataTransfer.getData('text/id');
+            
+            if (e.currentTarget.classList.contains('blank-space')) {
+                // Handle cloze question drops
+                e.currentTarget.innerHTML = `<span class="blank-filled">${draggedId}</span>`;
+                // Remove the dragged item from options pool
+                const draggedElement = document.querySelector(`[data-word="${draggedId}"]`);
+                if (draggedElement) {
+                    draggedElement.remove();
+                }
+            } else if (e.currentTarget.classList.contains('category-box') || e.currentTarget.classList.contains('category-items')) {
+                // Handle categorize question drops
+                const targetContainer = e.currentTarget.classList.contains('category-box') 
+                    ? e.currentTarget.querySelector('.category-items')
+                    : e.currentTarget;
+                
+                targetContainer.innerHTML += draggedHTML;
+                // Remove the dragged item from its original location
+                const draggedElement = document.querySelector(`[data-item="${draggedId}"]`);
+                if (draggedElement && draggedElement.parentNode !== targetContainer) {
+                    draggedElement.remove();
+                }
+            }
+            
+            // Re-initialize drag and drop for newly added elements
+            setTimeout(initializeDragAndDrop, 100);
+        }
+
+        function submitFormResponse() {
+            showNotification('Form response submitted successfully!', 'success');
+        }
+
+        // Load all forms
+        function loadAllForms() {
+            fetch('http://localhost:5000/api/forms')
+                .then(response => response.json())
+                .then(forms => {
+                    allForms = forms;
+                    displayForms(forms);
+                })
+                .catch(error => {
+                    console.error('Error loading forms:', error);
+                    showNotification('Error loading forms', 'error');
+                });
+        }
+
+        function displayForms(forms) {
+            const formsGrid = document.getElementById('forms-grid');
+            const formsEmpty = document.getElementById('forms-empty');
+            
+            if (forms.length === 0) {
+                formsGrid.classList.add('hidden');
+                formsEmpty.classList.remove('hidden');
+                return;
+            }
+            
+            formsGrid.classList.remove('hidden');
+            formsEmpty.classList.add('hidden');
+            
+            const formsHTML = forms.map(form => `
+                <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                    ${form.headerImage ? `<img src="${form.headerImage}" class="w-full h-32 object-cover rounded-lg mb-4">` : ''}
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">${form.title}</h3>
+                    <p class="text-gray-600 mb-4">${form.description || 'No description'}</p>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-gray-500">${form.questions.length} question${form.questions.length !== 1 ? 's' : ''}</span>
+                        <span class="text-sm text-gray-500">${new Date(form.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="viewForm('${form._id}')" class="flex-1 bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors">
+                            👁️ View
+                        </button>
+                        <button onclick="fillForm('${form._id}')" class="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-600 transition-colors">
+                            📝 Fill
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            formsGrid.innerHTML = formsHTML;
+        }
+
+        function viewForm(formId) {
+            const form = allForms.find(f => f._id === formId);
+            if (!form) {
+                showNotification('Form not found!', 'error');
+                return;
+            }
+            
+            currentViewForm = form;
+            document.getElementById('view-form-title').textContent = form.title;
+            
+            let html = `
+                <div class="mb-8">
+                    ${form.headerImage ? `<img src="${form.headerImage}" class="w-full h-48 object-cover rounded-lg mb-6">` : ''}
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">${form.title}</h1>
+                    ${form.description ? `<p class="text-gray-600 text-lg mb-6">${form.description}</p>` : ''}
+                </div>
+            `;
+            
+            form.questions.forEach((question, index) => {
+                html += generateViewOnlyQuestion(question, index + 1);
+            });
+            
+            document.getElementById('form-view-content').innerHTML = html;
+            showPage('form-view');
+        }
+
+        function fillForm(formId) {
+            const form = allForms.find(f => f._id === formId);
+            if (!form) {
+                showNotification('Form not found!', 'error');
+                return;
+            }
+            
+            currentViewForm = form;
+            document.getElementById('view-form-title').textContent = `Fill: ${form.title}`;
+            
+            let html = `
+                <div class="mb-8">
+                    ${form.headerImage ? `<img src="${form.headerImage}" class="w-full h-48 object-cover rounded-lg mb-6">` : ''}
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">${form.title}</h1>
+                    ${form.description ? `<p class="text-gray-600 text-lg mb-6">${form.description}</p>` : ''}
+                </div>
+            `;
+            
+            form.questions.forEach((question, index) => {
+                html += generateInteractiveQuestionFromForm(question, index + 1);
+            });
+            
+            document.getElementById('form-view-content').innerHTML = html;
+            showPage('form-view');
+            
+            // Initialize drag and drop for fill mode
+            setTimeout(initializeDragAndDrop, 100);
+        }
+
+        function generateViewOnlyQuestion(question, number) {
+            let html = `
+                <div class="border border-gray-200 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        ${number}. ${question.title}
+                    </h3>
+                    ${question.image ? `<img src="${question.image}" class="w-full max-w-md h-32 object-cover rounded-lg mb-4">` : ''}
+                    <p class="text-gray-600 mb-4">${question.description}</p>
+            `;
+            
+            switch(question.type) {
+                case 'categorize':
+                    html += `
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-gray-700 mb-3">Items:</h4>
+                                <div class="space-y-2">
+                                    ${question.items.map(item => `
+                                        <div class="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg">${item}</div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-700 mb-3">Categories:</h4>
+                                <div class="space-y-2">
+                                    ${question.categories.map(cat => `
+                                        <div class="border-2 border-dashed border-gray-300 p-4 rounded-lg">
+                                            <strong>${cat}</strong>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'cloze':
+                    html += `
+                        <div class="bg-gray-50 p-6 rounded-lg mb-4">
+                            <p class="text-lg">${question.text}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-700 mb-3">Available words:</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${question.options.map(option => `
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-lg">${option}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'comprehension':
+                    html += `
+                        <div class="bg-gray-50 p-6 rounded-lg mb-4">
+                            <p class="text-gray-700">${question.passage}</p>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-bold text-gray-800 mb-3">${question.question}</h4>
+                            <div class="space-y-2">
+                                ${question.options.map((option, i) => `
+                                    <div class="border border-gray-200 rounded-lg p-3">
+                                        ${option}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            html += `</div>`;
+            return html;
+        }
+
+        function generateInteractiveQuestionFromForm(question, number) {
+            const questionObj = {
+                id: number,
+                type: question.type,
+                title: question.title,
+                details: question,
+                image: question.image
+            };
+            return generateInteractiveQuestion(questionObj, number);
+        }
+
+        function submitFilledForm() {
+            if (!currentViewForm) return;
+            
+            const responses = {
+                formId: currentViewForm._id,
+                responses: {},
+                submittedAt: new Date().toISOString()
+            };
+            
+            // Collect responses here based on form type
+            // This is a simplified version - you'd need to collect actual user responses
+            
+            fetch('http://localhost:5000/api/responses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(responses)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification('Response submitted successfully!', 'success');
+                setTimeout(() => showPage('forms'), 1500);
+            })
+            .catch(error => {
+                console.error('Error submitting response:', error);
+                showNotification('Error submitting response', 'error');
+            });
+        }
+
+        function testAPI() {
+            showNotification('Testing API connection...', 'info');
+            
+            fetch('http://localhost:5000/api/forms')
+                .then(response => {
+                    if (!response.ok) throw new Error('API not responding');
+                    return response.json();
+                })
+                .then(data => {
+                    showNotification(`✅ API working! Found ${data.length} forms.`, 'success');
+                })
+                .catch(error => {
+                    console.error('API Error:', error);
+                    showNotification('❌ API test failed: ' + error.message, 'error');
+                });
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Form Builder Application Loaded');
+            showPage('home');
+            showNotification('🚀 Form Builder loaded successfully!', 'success');
+        });
+
+        // Add CSS for slide animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

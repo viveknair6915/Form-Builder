@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Builder - Working Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .nav {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav h1 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: white;
+            color: #6366f1;
+        }
+        
+        .btn-primary:hover {
+            background: #f3f4f6;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+        .hero h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .form-section {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        .question-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .question-btn {
+            background: #6366f1;
+            color: white;
+            padding: 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .question-btn:hover {
+            background: #5856eb;
+            transform: translateY(-2px);
+        }
+        
+        .questions-list {
+            margin: 30px 0;
+        }
+        
+        .question-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .question-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .question-type {
+            background: #6366f1;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav">
+        <h1>🚀 Form Builder</h1>
+        <div class="nav-buttons">
+            <button class="btn" onclick="showPage('home')">Home</button>
+            <button class="btn btn-primary" onclick="showPage('builder')">Create Form</button>
+            <button class="btn" onclick="showPage('forms')">View Forms</button>
+            <button class="btn" onclick="testAPI()">Test API</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <div class="glass">
+                <div class="hero">
+                    <h2>Custom Form Builder</h2>
+                    <p>Create interactive forms with advanced question types</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <div class="feature-title">Categorize Questions</div>
+                            <div class="feature-desc">Drag and drop items into correct categories</div>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">📝</div>
+                            <div class="feature-title">Cloze Questions</div>
+                            <div class="feature-desc">Fill-in-the-blank with draggable options</div>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">📖</div>
+                            <div class="feature-title">Comprehension Questions</div>
+                            <div class="feature-desc">Multiple choice with rich text support</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="showPage('builder')" style="margin: 10px; font-size: 18px; padding: 15px 30px;">
+                            🎯 Create New Form
+                        </button>
+                        <button class="btn" onclick="showPage('forms')" style="margin: 10px; font-size: 18px; padding: 15px 30px;">
+                            📋 View All Forms
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Builder Page -->
+        <div id="builder-page" class="page">
+            <div class="glass">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <div>
+                        <h2 style="font-size: 32px; margin-bottom: 10px;">Form Builder</h2>
+                        <p>Create your custom form with advanced question types</p>
+                    </div>
+                    <div>
+                        <button class="btn" onclick="previewForm()" style="background: #10b981; margin-right: 10px;">👁️ Preview</button>
+                        <button class="btn" onclick="showPage('home')">← Back</button>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Form Settings -->
+                    <div>
+                        <div class="form-section">
+                            <h3 style="margin-bottom: 20px; color: #333;">Form Settings</h3>
+                            
+                            <div class="form-group">
+                                <label>Form Title *</label>
+                                <input type="text" id="formTitle" placeholder="Enter form title...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="formDescription" placeholder="Enter form description..." rows="3"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Header Image</label>
+                                <input type="file" id="headerImage" accept="image/*" onchange="handleHeaderImage(this)">
+                                <div id="headerPreview" class="hidden" style="margin-top: 10px;">
+                                    <img id="headerImg" style="max-width: 100%; height: 150px; object-fit: cover; border-radius: 8px;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3 style="margin-bottom: 20px; color: #333;">Add Questions</h3>
+                            <div class="question-types">
+                                <button class="question-btn" onclick="addQuestion('categorize')">
+                                    📊 Categorize
+                                </button>
+                                <button class="question-btn" onclick="addQuestion('cloze')">
+                                    📝 Cloze
+                                </button>
+                                <button class="question-btn" onclick="addQuestion('comprehension')">
+                                    📖 Comprehension
+                                </button>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="saveForm()" style="width: 100%; margin-top: 20px; padding: 15px;">
+                                💾 Save Form
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Questions List -->
+                    <div>
+                        <div class="form-section">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h3 style="color: #333;">Form Questions</h3>
+                                <span id="questionCount" style="color: #666;">0 questions</span>
+                            </div>
+                            
+                            <div id="emptyState" class="alert alert-info">
+                                <strong>No questions yet</strong><br>
+                                Add your first question using the buttons on the left
+                            </div>
+                            
+                            <div id="questionsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forms List Page -->
+        <div id="forms-page" class="page">
+            <div class="glass">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2 style="font-size: 32px;">All Forms</h2>
+                    <button class="btn" onclick="showPage('home')">← Back to Home</button>
+                </div>
+                
+                <div id="formsGrid" class="feature-grid">
+                    <!-- Forms will be populated here -->
+                </div>
+                
+                <div id="formsEmpty" class="alert alert-info">
+                    <strong>No forms created yet</strong><br>
+                    <button class="btn btn-primary" onclick="showPage('builder')" style="margin-top: 10px;">Create Your First Form</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Page -->
+        <div id="preview-page" class="page">
+            <div class="glass">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2 style="font-size: 32px;">Form Preview</h2>
+                    <div>
+                        <button class="btn" onclick="submitPreview()" style="background: #10b981; margin-right: 10px;">✅ Submit</button>
+                        <button class="btn" onclick="showPage('builder')">← Back to Editor</button>
+                    </div>
+                </div>
+                
+                <div id="previewContent" class="form-section">
+                    <!-- Preview content will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+
+    <script>
+        // Global variables
+        let questions = [];
+        let questionCounter = 0;
+        let headerImageData = null;
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notifications');
+            const notification = document.createElement('div');
+            
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                warning: '#f59e0b',
+                info: '#3b82f6'
+            };
+            
+            notification.style.cssText = `
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            
+            notification.textContent = message;
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageId + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+                
+                // Load data for specific pages
+                if (pageId === 'forms') {
+                    loadForms();
+                }
+            }
+            
+            console.log('Navigated to:', pageId);
+        }
+
+        // Handle header image
+        function handleHeaderImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    headerImageData = e.target.result;
+                    document.getElementById('headerImg').src = headerImageData;
+                    document.getElementById('headerPreview').classList.remove('hidden');
+                    showNotification('Header image uploaded!', 'success');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Add question
+        function addQuestion(type) {
+            questionCounter++;
+            const question = {
+                id: questionCounter,
+                type: type,
+                title: `${type.charAt(0).toUpperCase() + type.slice(1)} Question ${questionCounter}`,
+                content: getDefaultContent(type)
+            };
+            
+            questions.push(question);
+            updateQuestionsList();
+            showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} question added!`, 'success');
+        }
+
+        function getDefaultContent(type) {
+            switch(type) {
+                case 'categorize':
+                    return {
+                        description: 'Drag items into correct categories',
+                        categories: ['Category 1', 'Category 2'],
+                        items: ['Item 1', 'Item 2', 'Item 3', 'Item 4']
+                    };
+                case 'cloze':
+                    return {
+                        description: 'Fill in the blanks',
+                        text: 'The quick _____ fox jumps over the lazy _____.',
+                        options: ['brown', 'dog', 'fast', 'cat']
+                    };
+                case 'comprehension':
+                    return {
+                        description: 'Read and answer',
+                        passage: 'This is a sample passage for comprehension.',
+                        question: 'What is the main idea?',
+                        options: ['Option A', 'Option B', 'Option C', 'Option D']
+                    };
+                default:
+                    return {};
+            }
+        }
+
+        // Update questions list
+        function updateQuestionsList() {
+            const container = document.getElementById('questionsList');
+            const emptyState = document.getElementById('emptyState');
+            const countEl = document.getElementById('questionCount');
+            
+            countEl.textContent = `${questions.length} question${questions.length !== 1 ? 's' : ''}`;
+            
+            if (questions.length === 0) {
+                emptyState.style.display = 'block';
+                container.innerHTML = '';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            container.innerHTML = questions.map(q => `
+                <div class="question-item">
+                    <div class="question-header">
+                        <div>
+                            <span class="question-title">${q.title}</span>
+                            <span class="question-type">${q.type}</span>
+                        </div>
+                        <button onclick="removeQuestion(${q.id})" class="btn" style="background: #ef4444; padding: 8px 12px; font-size: 12px;">
+                            🗑️ Remove
+                        </button>
+                    </div>
+                    <div style="color: #666; margin-top: 8px;">
+                        ${q.content.description || 'No description'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Remove question
+        function removeQuestion(id) {
+            questions = questions.filter(q => q.id !== id);
+            updateQuestionsList();
+            showNotification('Question removed!', 'success');
+        }
+
+        // Save form
+        function saveForm() {
+            const title = document.getElementById('formTitle').value;
+            const description = document.getElementById('formDescription').value;
+            
+            if (!title.trim()) {
+                showNotification('Please enter a form title!', 'error');
+                return;
+            }
+            
+            if (questions.length === 0) {
+                showNotification('Please add at least one question!', 'error');
+                return;
+            }
+            
+            const formData = {
+                title: title.trim(),
+                description: description.trim(),
+                headerImage: headerImageData,
+                questions: questions,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Send to backend
+            fetch('http://localhost:5000/api/forms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to save form');
+                return response.json();
+            })
+            .then(data => {
+                showNotification('Form saved successfully!', 'success');
+                
+                // Reset form
+                document.getElementById('formTitle').value = '';
+                document.getElementById('formDescription').value = '';
+                document.getElementById('headerImage').value = '';
+                document.getElementById('headerPreview').classList.add('hidden');
+                headerImageData = null;
+                questions = [];
+                questionCounter = 0;
+                updateQuestionsList();
+                
+                setTimeout(() => showPage('home'), 1500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error saving form: ' + error.message, 'error');
+            });
+        }
+
+        // Preview form
+        function previewForm() {
+            const title = document.getElementById('formTitle').value;
+            const description = document.getElementById('formDescription').value;
+            
+            if (!title.trim()) {
+                showNotification('Please enter a form title to preview!', 'error');
+                return;
+            }
+            
+            if (questions.length === 0) {
+                showNotification('Please add questions to preview!', 'error');
+                return;
+            }
+            
+            generatePreview(title, description);
+            showPage('preview');
+        }
+
+        function generatePreview(title, description) {
+            const container = document.getElementById('previewContent');
+            
+            let html = `
+                <div style="margin-bottom: 30px;">
+                    ${headerImageData ? `<img src="${headerImageData}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 20px;">` : ''}
+                    <h1 style="font-size: 36px; color: #333; margin-bottom: 15px;">${title}</h1>
+                    ${description ? `<p style="font-size: 18px; color: #666; margin-bottom: 20px;">${description}</p>` : ''}
+                </div>
+            `;
+            
+            questions.forEach((q, index) => {
+                html += `
+                    <div style="background: #f9fafb; padding: 25px; border-radius: 10px; margin: 20px 0; border: 1px solid #e5e7eb;">
+                        <h3 style="color: #333; margin-bottom: 15px;">${index + 1}. ${q.title}</h3>
+                        <p style="color: #666; margin-bottom: 15px;">${q.content.description}</p>
+                        ${generateQuestionPreview(q)}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function generateQuestionPreview(question) {
+            switch(question.type) {
+                case 'categorize':
+                    return `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <strong>Items:</strong>
+                                ${question.content.items.map(item => `
+                                    <div style="background: #dbeafe; color: #1e40af; padding: 8px 12px; margin: 5px 0; border-radius: 6px; cursor: move;">
+                                        ${item}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div>
+                                <strong>Categories:</strong>
+                                ${question.content.categories.map(cat => `
+                                    <div style="border: 2px dashed #d1d5db; padding: 20px; margin: 5px 0; border-radius: 6px; min-height: 60px;">
+                                        <strong>${cat}</strong>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                case 'cloze':
+                    return `
+                        <div>
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 6px; margin: 10px 0;">
+                                <p style="font-size: 16px; color: #333;">${question.content.text}</p>
+                            </div>
+                            <strong>Available words:</strong>
+                            <div style="margin-top: 10px;">
+                                ${question.content.options.map(option => `
+                                    <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; margin: 4px; border-radius: 6px; cursor: move; display: inline-block;">
+                                        ${option}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                case 'comprehension':
+                    return `
+                        <div>
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                                <p style="color: #333;">${question.content.passage}</p>
+                            </div>
+                            <div style="margin: 15px 0;">
+                                <strong>${question.content.question}</strong>
+                                <div style="margin-top: 10px;">
+                                    ${question.content.options.map((option, i) => `
+                                        <label style="display: block; margin: 8px 0; cursor: pointer;">
+                                            <input type="radio" name="q${question.id}" value="${i}" style="margin-right: 8px;">
+                                            ${option}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                default:
+                    return '<p>Preview not available</p>';
+            }
+        }
+
+        function submitPreview() {
+            showNotification('Form preview submitted! (This would save responses)', 'success');
+        }
+
+        // Load forms
+        function loadForms() {
+            fetch('http://localhost:5000/api/forms')
+                .then(response => response.json())
+                .then(forms => {
+                    displayForms(forms);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error loading forms', 'error');
+                });
+        }
+
+        function displayForms(forms) {
+            const container = document.getElementById('formsGrid');
+            const emptyState = document.getElementById('formsEmpty');
+            
+            if (forms.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            container.innerHTML = forms.map(form => `
+                <div class="feature-card">
+                    ${form.headerImage ? `<img src="${form.headerImage}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">` : ''}
+                    <div class="feature-title" style="font-size: 18px;">${form.title}</div>
+                    <div class="feature-desc">${form.description || 'No description'}</div>
+                    <div style="margin: 15px 0; font-size: 14px; color: #666;">
+                        ${form.questions.length} question${form.questions.length !== 1 ? 's' : ''}
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button onclick="viewForm('${form._id}')" class="btn" style="background: #6366f1; margin: 5px;">
+                            👁️ View
+                        </button>
+                        <button onclick="fillForm('${form._id}')" class="btn" style="background: #10b981; margin: 5px;">
+                            📝 Fill
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewForm(formId) {
+            const form = allForms.find(f => f._id === formId);
+            if (!form) {
+                showNotification('Form not found!', 'error');
+                return;
+            }
+            
+            // Create a modal to show the form
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.8); z-index: 1000; padding: 20px;
+                overflow-y: auto;
+            `;
+            
+            modal.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 15px; padding: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #333; margin: 0;">${form.title}</h2>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                            ✕ Close
+                        </button>
+                    </div>
+                    ${form.headerImage ? `<img src="${form.headerImage}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 20px;">` : ''}
+                    ${form.description ? `<p style="color: #666; margin-bottom: 20px;">${form.description}</p>` : ''}
+                    ${form.questions.map((q, i) => `
+                        <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 15px 0; border: 1px solid #e5e7eb;">
+                            <h3 style="color: #333; margin-bottom: 10px;">${i + 1}. ${q.title || q.type + ' Question'}</h3>
+                            <p style="color: #666;">${q.description || 'Interactive question'}</p>
+                            ${generateQuestionPreview(q)}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            showNotification(`Viewing form: ${form.title}`, 'info');
+        }
+
+        function fillForm(formId) {
+            const form = allForms.find(f => f._id === formId);
+            if (!form) {
+                showNotification('Form not found!', 'error');
+                return;
+            }
+            
+            // Create an interactive fill modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.8); z-index: 1000; padding: 20px;
+                overflow-y: auto;
+            `;
+            
+            modal.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 15px; padding: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #333; margin: 0;">Fill: ${form.title}</h2>
+                        <div>
+                            <button onclick="submitFormFromModal('${formId}')" 
+                                    style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-right: 10px;">
+                                ✅ Submit
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" 
+                                    style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                                ✕ Close
+                            </button>
+                        </div>
+                    </div>
+                    ${form.headerImage ? `<img src="${form.headerImage}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 20px;">` : ''}
+                    ${form.description ? `<p style="color: #666; margin-bottom: 20px;">${form.description}</p>` : ''}
+                    ${form.questions.map((q, i) => generateInteractiveModalQuestion(q, i)).join('')}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            showNotification(`Fill mode: ${form.title}`, 'info');
+        }
+
+        function generateQuestionPreview(question) {
+            switch(question.type) {
+                case 'categorize':
+                    return `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                            <div>
+                                <strong>Items:</strong>
+                                ${(question.items || ['Item 1', 'Item 2']).map(item => `
+                                    <div style="background: #dbeafe; color: #1e40af; padding: 8px 12px; margin: 5px 0; border-radius: 6px;">
+                                        ${item}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div>
+                                <strong>Categories:</strong>
+                                ${(question.categories || ['Category 1', 'Category 2']).map(cat => `
+                                    <div style="border: 2px dashed #d1d5db; padding: 15px; margin: 5px 0; border-radius: 6px;">
+                                        <strong>${cat}</strong>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                case 'cloze':
+                    return `
+                        <div style="margin-top: 15px;">
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 6px; margin: 10px 0;">
+                                <p style="font-size: 16px; color: #333;">${question.text || 'Fill in the blanks: The _____ is _____.'}</p>
+                            </div>
+                            <strong>Available words:</strong>
+                            <div style="margin-top: 10px;">
+                                ${(question.options || ['option1', 'option2']).map(option => `
+                                    <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; margin: 4px; border-radius: 6px; display: inline-block;">
+                                        ${option}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                case 'comprehension':
+                    return `
+                        <div style="margin-top: 15px;">
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                                <p style="color: #333;">${question.passage || 'Sample passage for comprehension.'}</p>
+                            </div>
+                            <div style="margin: 15px 0;">
+                                <strong>${question.question || 'Sample question?'}</strong>
+                                <div style="margin-top: 10px;">
+                                    ${(question.options || ['Option A', 'Option B', 'Option C', 'Option D']).map((option, i) => `
+                                        <div style="margin: 8px 0; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                                            ${option}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                default:
+                    return '<p style="color: #666;">Preview not available</p>';
+            }
+        }
+
+        function generateInteractiveModalQuestion(question, index) {
+            return `
+                <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 15px 0; border: 1px solid #e5e7eb;">
+                    <h3 style="color: #333; margin-bottom: 10px;">${index + 1}. ${question.title || question.type + ' Question'}</h3>
+                    <p style="color: #666; margin-bottom: 15px;">${question.description || 'Interactive question'}</p>
+                    ${generateInteractiveQuestionContent(question, index)}
+                </div>
+            `;
+        }
+
+        function generateInteractiveQuestionContent(question, index) {
+            switch(question.type) {
+                case 'categorize':
+                    return `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <strong>Drag items to categories:</strong>
+                                <div id="items-${index}" style="border: 2px dashed #d1d5db; padding: 15px; border-radius: 6px; min-height: 80px;">
+                                    ${(question.items || ['Item 1', 'Item 2']).map(item => `
+                                        <div draggable="true" style="background: #3b82f6; color: white; padding: 8px 12px; margin: 5px; border-radius: 6px; cursor: move; display: inline-block;">
+                                            ${item}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <strong>Categories:</strong>
+                                ${(question.categories || ['Category 1', 'Category 2']).map((cat, i) => `
+                                    <div ondrop="drop(event)" ondragover="allowDrop(event)" 
+                                         style="border: 2px dashed #d1d5db; padding: 15px; margin: 5px 0; border-radius: 6px; min-height: 60px;">
+                                        <strong>${cat}</strong>
+                                        <div id="category-${index}-${i}"></div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                case 'cloze':
+                    const clozeText = (question.text || 'The quick _____ fox jumps over the lazy _____.').replace(/_+/g, 
+                        `<input type="text" style="border-bottom: 2px solid #3b82f6; border-top: none; border-left: none; border-right: none; padding: 2px 8px; margin: 0 5px; background: transparent;" placeholder="??">`
+                    );
+                    return `
+                        <div style="margin: 15px 0;">
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 6px; margin: 10px 0; font-size: 16px;">
+                                ${clozeText}
+                            </div>
+                            <strong>Available words:</strong>
+                            <div style="margin-top: 10px;">
+                                ${(question.options || ['brown', 'dog']).map(option => `
+                                    <span onclick="this.style.opacity='0.5'" style="background: #10b981; color: white; padding: 8px 12px; margin: 4px; border-radius: 15px; cursor: pointer; display: inline-block;">
+                                        ${option}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                case 'comprehension':
+                    return `
+                        <div style="margin: 15px 0;">
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                                <p style="color: #333;">${question.passage || 'Sample passage for comprehension.'}</p>
+                            </div>
+                            <div style="margin: 15px 0;">
+                                <strong>${question.question || 'Sample question?'}</strong>
+                                <div style="margin-top: 10px;">
+                                    ${(question.options || ['Option A', 'Option B', 'Option C', 'Option D']).map((option, i) => `
+                                        <label style="display: block; margin: 8px 0; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; transition: background 0.2s;">
+                                            <input type="radio" name="comprehension_${index}" value="${i}" style="margin-right: 8px;">
+                                            ${option}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                default:
+                    return '<p>Interactive content not available</p>';
+            }
+        }
+
+        function submitFormFromModal(formId) {
+            showNotification('Form response submitted successfully!', 'success');
+            // Close modal
+            const modal = document.querySelector('[style*="position: fixed"]');
+            if (modal) modal.remove();
+        }
+
+        // Add drag and drop functions to global scope
+        window.allowDrop = function(ev) {
+            ev.preventDefault();
+        }
+
+        window.drop = function(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text/html");
+            if (data) {
+                ev.target.innerHTML += data;
+                ev.target.style.background = '#e0f2fe';
+            }
+        }
+
+        // Test API
+        function testAPI() {
+            showNotification('Testing API connection...', 'info');
+            
+            fetch('http://localhost:5000/api/forms')
+                .then(response => {
+                    if (!response.ok) throw new Error('API not responding');
+                    return response.json();
+                })
+                .then(data => {
+                    showNotification(`✅ API working! Found ${data.length} forms.`, 'success');
+                })
+                .catch(error => {
+                    console.error('API Error:', error);
+                    showNotification('❌ API test failed: ' + error.message, 'error');
+                });
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Form Builder loaded successfully!');
+            showNotification('🚀 Form Builder loaded successfully!', 'success');
+            
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "mern-form-builder",
+  "version": "1.0.0",
+  "description": "A complete MERN stack form builder with categorize, cloze, and comprehension question types",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run frontend\"",
+    "server": "cd server && npm run dev",
+    "frontend": "cd frontend && python -m http.server 3000",
+    "install-deps": "npm install && cd server && npm install",
+    "start": "cd server && npm start",
+    "build": "echo 'Frontend is static HTML, no build needed'",
+    "test": "cd server && npm test"
+  },
+  "keywords": [
+    "mern",
+    "form-builder",
+    "mongodb",
+    "express",
+    "nodejs",
+    "categorize",
+    "cloze",
+    "comprehension",
+    "education"
+  ],
+  "author": "viveknair6915",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "form-builder-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for MERN Form Builder - Static HTML/CSS/JavaScript",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "serve": "python -m http.server 3000",
+    "dev": "python -m http.server 3000"
+  },
+  "keywords": ["frontend", "html", "javascript", "form-builder"],
+  "author": "viveknair6915",
+  "license": "MIT"
+}

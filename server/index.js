@@ -32,14 +32,18 @@ app.use('/api/forms', formRoutes);
 app.use('/api/responses', responseRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Serve static files from the React app
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+// API health check endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Form Builder API is running!',
+    status: 'healthy',
+    endpoints: [
+      '/api/forms',
+      '/api/responses', 
+      '/api/upload'
+    ]
   });
-}
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -80,7 +80,6 @@ client/
 setup.bat
 setup.sh
 start-all.bat
-index.html
 docker-compose.yml
 Dockerfile
 package-deploy.json

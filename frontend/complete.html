@@ -847,7 +847,7 @@
 
         // Load all forms
         function loadAllForms() {
-            fetch('http://localhost:5000/api/forms')
+            fetch('https://form-builder-4mtj.onrender.com/api/forms')
                 .then(response => response.json())
                 .then(forms => {
                     allForms = forms;
@@ -1046,7 +1046,7 @@
             // Collect responses here based on form type
             // This is a simplified version - you'd need to collect actual user responses
             
-            fetch('http://localhost:5000/api/responses', {
+            fetch('https://form-builder-4mtj.onrender.com/api/responses', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(responses)
@@ -1065,7 +1065,7 @@
         function testAPI() {
             showNotification('Testing API connection...', 'info');
             
-            fetch('http://localhost:5000/api/forms')
+            fetch('https://form-builder-4mtj.onrender.com/api/forms')
                 .then(response => {
                     if (!response.ok) throw new Error('API not responding');
                     return response.json();

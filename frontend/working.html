@@ -646,7 +646,7 @@
             };
             
             // Send to backend
-            fetch('http://localhost:5000/api/forms', {
+            fetch('https://form-builder-4mtj.onrender.com/api/forms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -788,7 +788,7 @@
 
         // Load forms
         function loadForms() {
-            fetch('http://localhost:5000/api/forms')
+            fetch('https://form-builder-4mtj.onrender.com/api/forms')
                 .then(response => response.json())
                 .then(forms => {
                     displayForms(forms);
@@ -1079,7 +1079,7 @@
         function testAPI() {
             showNotification('Testing API connection...', 'info');
             
-            fetch('http://localhost:5000/api/forms')
+            fetch('https://form-builder-4mtj.onrender.com/api/forms')
                 .then(response => {
                     if (!response.ok) throw new Error('API not responding');
                     return response.json();

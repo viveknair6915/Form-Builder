@@ -642,7 +642,7 @@
             showNotification('💾 Saving form...', 'info');
             
             // Send to backend
-            fetch('http://localhost:5000/api/forms', {
+            fetch('https://form-builder-4mtj.onrender.com/api/forms', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -811,7 +811,7 @@
         }
 
         function loadAllForms() {
-            fetch('http://localhost:5000/api/forms')
+            fetch('https://form-builder-4mtj.onrender.com/api/forms')
                 .then(response => response.json())
                 .then(forms => {
                     displayForms(forms);
@@ -872,7 +872,7 @@
             debugLog('Testing API connection...');
             showNotification('🔍 Testing API connection...', 'info');
             
-            fetch('http://localhost:5000/api/forms')
+            fetch('https://form-builder-4mtj.onrender.com/api/forms')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('API response was not ok');

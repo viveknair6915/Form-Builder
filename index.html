@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERN Form Builder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        .btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .feature h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        .feature p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 MERN Form Builder</h1>
+        <p>Create interactive forms with categorize, cloze, and comprehension questions</p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>📊 Categorize</h3>
+                <p>Drag & drop sorting questions</p>
+            </div>
+            <div class="feature">
+                <h3>📝 Cloze</h3>
+                <p>Fill-in-the-blank questions</p>
+            </div>
+            <div class="feature">
+                <h3>📖 Comprehension</h3>
+                <p>Reading comprehension MCQs</p>
+            </div>
+        </div>
+
+        <a href="/frontend/index.html" class="btn">🎯 Open Form Builder</a>
+        <a href="http://localhost:5000/api/forms" class="btn" target="_blank">🔧 Test Backend API</a>
+        
+        <p style="margin-top: 2rem; font-size: 0.9rem;">
+            Backend: <strong>http://localhost:5000</strong> | 
+            Frontend: <strong>http://localhost:3000</strong>
+        </p>
+    </div>
+
+    <script>
+        // Auto-redirect in 3 seconds if user doesn't click
+        setTimeout(() => {
+            if (confirm('Redirect to Form Builder now?')) {
+                window.location.href = '/frontend/index.html';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

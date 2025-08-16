@@ -625,15 +625,24 @@
             // Prepare questions for backend (remove frontend-only fields)
             const backendQuestions = questions.map(q => {
                 if (q.type === 'categorize') {
-                    // Flatten categories and items for backend schema
+                    // Backend expects categories: [String], items: [String]
                     const categoryNames = (q.details.categories || []).map(c => c.name);
-                    const allItems = (q.details.categories || []).flatMap(c => c.items);
+                    // Collect all items from all categories and from unassigned items
+                    let itemsArr = [];
+                    if (Array.isArray(q.details.items)) {
+                        itemsArr = itemsArr.concat(q.details.items);
+                    }
+                    (q.details.categories || []).forEach(cat => {
+                        if (Array.isArray(cat.items)) {
+                            itemsArr = itemsArr.concat(cat.items);
+                        }
+                    });
                     return {
                         type: q.type,
                         title: q.title,
                         image: q.image,
                         categories: categoryNames,
-                        items: allItems,
+                        items: itemsArr,
                         description: q.details.description
                     };
                 } else if (q.type === 'cloze') {
@@ -777,13 +786,23 @@
         }
 
         function generateCategorizePreview(question) {
+            // Show unassigned items and categories with their items
+            let unassignedItems = question.details.items ? [...question.details.items] : [];
+            (question.details.categories || []).forEach(cat => {
+                if (Array.isArray(cat.items)) {
+                    cat.items.forEach(item => {
+                        const idx = unassignedItems.indexOf(item);
+                        if (idx !== -1) unassignedItems.splice(idx, 1);
+                    });
+                }
+            });
             return `
                 <p class="text-gray-600 mb-4">${question.details.description}</p>
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
                         <h4 class="font-medium text-gray-700 mb-2">Items to categorize:</h4>
                         <div class="space-y-2">
-                            ${question.details.categories.flatMap(cat => cat.items).map(item => 
+                            ${unassignedItems.map(item => 
                                 `<div class="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg cursor-move">${item}</div>`
                             ).join('')}
                         </div>
@@ -791,9 +810,10 @@
                     <div>
                         <h4 class="font-medium text-gray-700 mb-2">Categories:</h4>
                         <div class="space-y-2">
-                            ${question.details.categories.map(cat => 
+                            ${(question.details.categories || []).map(cat => 
                                 `<div class="border-2 border-dashed border-gray-300 p-4 rounded-lg min-h-[80px]">
-                                    <strong>${cat.name}</strong>
+                                    <strong>${cat.name}</strong><br>
+                                    ${(cat.items && cat.items.length > 0) ? cat.items.map(i => `<span class='inline-block bg-blue-200 text-blue-900 px-2 py-1 rounded m-1'>${i}</span>`).join('') : '<span class="text-gray-400">(No items)</span>'}
                                 </div>`
                             ).join('')}
                         </div>
@@ -803,15 +823,26 @@
         }
 
         function generateClozePreview(question) {
+            // Render the cloze sentence with input fields for blanks
+            let sentenceHtml = '';
+            let blankIdx = 0;
+            (question.details.text || '').split(/(_+)/).forEach(part => {
+                if (part === '_') {
+                    sentenceHtml += `<input type="text" class="border-b-2 border-gray-400 w-16 mx-1 px-1" data-blank-idx="${blankIdx}" value="" />`;
+                    blankIdx++;
+                } else {
+                    sentenceHtml += part;
+                }
+            });
             return `
                 <p class="text-gray-600 mb-4">${question.details.description}</p>
                 <div class="bg-gray-50 p-4 rounded-lg mb-4">
-                    <p class="text-lg">${question.details.text}</p>
+                    <p class="text-lg">${sentenceHtml}</p>
                 </div>
                 <div>
                     <h4 class="font-medium text-gray-700 mb-2">Available words:</h4>
                     <div class="flex flex-wrap gap-2">
-                        ${question.details.options.map(option => 
+                        ${(question.details.options || []).map(option => 
                             `<span class="bg-green-100 text-green-800 px-3 py-1 rounded-lg cursor-move">${option}</span>`
                         ).join('')}
                     </div>

@@ -623,12 +623,47 @@
             }
             
             // Prepare questions for backend (remove frontend-only fields)
-            const backendQuestions = questions.map(q => ({
-                type: q.type,
-                title: q.title,
-                image: q.image,
-                ...q.details
-            }));
+            const backendQuestions = questions.map(q => {
+                if (q.type === 'categorize') {
+                    // Flatten categories and items for backend schema
+                    const categoryNames = (q.details.categories || []).map(c => c.name);
+                    const allItems = (q.details.categories || []).flatMap(c => c.items);
+                    return {
+                        type: q.type,
+                        title: q.title,
+                        image: q.image,
+                        categories: categoryNames,
+                        items: allItems,
+                        description: q.details.description
+                    };
+                } else if (q.type === 'cloze') {
+                    return {
+                        type: q.type,
+                        title: q.title,
+                        image: q.image,
+                        text: q.details.text,
+                        options: q.details.options,
+                        blanks: q.details.blanks,
+                        description: q.details.description
+                    };
+                } else if (q.type === 'comprehension') {
+                    return {
+                        type: q.type,
+                        title: q.title,
+                        image: q.image,
+                        passage: q.details.passage,
+                        questions: q.details.questions,
+                        description: q.details.description
+                    };
+                } else {
+                    return {
+                        type: q.type,
+                        title: q.title,
+                        image: q.image,
+                        ...q.details
+                    };
+                }
+            });
             
             const formData = {
                 title: formTitle.trim(),
